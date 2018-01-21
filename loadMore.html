@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>loadMore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .content li {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .loadMore {
+            display: inline-block;
+            color: rgb(233, 71, 22);
+            border: 1px solid rgb(233, 71, 22);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+        }
+
+        .button {
+            text-align: center;
+        }
+
+        .content li.hover {
+            background-color: rgb(18, 122, 18);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <ul class="content">
+            <li>内容1</li>
+            <li>内容2</li>
+        </ul>
+    </div>
+    <div class="button">
+        <a href="#" class="loadMore">加载更多</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <script>
+        var $ct = $('.content')
+        var $loadMore = $('.loadMore')
+        var index = 3
+        var len = 5
+
+        $ct.on('mouseenter', 'li', function () {
+            $(this).addClass('hover');
+        })
+        $ct.on('mouseleave', 'li', function () {
+            $(this).removeClass('hover');
+        })
+
+        $loadMore.on('click', function (e) {
+            e.preventDefault() //阻止默认事件（点击a到页面顶部）
+
+            if ($(this).data('isLoading')) { //获取一个状态锁
+                return;
+            }
+
+            isLoading = true
+
+            $.ajax({
+                url: '/loadMore',
+                method: 'get',
+                dataType: 'json',
+                data: {
+                    idx: index,
+                    len: len
+                }
+            }).done(function(data){
+                isLoading = false
+                index = index +len
+                appendHtml(data);
+                }).fail(function(jqXHR,textStatus){
+                console.log(textStatus)
+            })
+        });
+        function appendHtml(data){
+            for(var i =0;i<len;i++){
+                $ct.append('<li>'+data[i]+'</li>')
+            }
+        }
+
+        
+    </script>
+</body>
+
+</html>
